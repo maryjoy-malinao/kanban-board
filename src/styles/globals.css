@@ -40,68 +40,136 @@
   --card-border-rgb: 131, 134, 135;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+.container{
+  margin: auto;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-left: 40px;
+  padding-right: 40px;
+}
 
-    --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
-    --secondary-glow: linear-gradient(
-      to bottom right,
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0),
-      rgba(1, 65, 255, 0.3)
-    );
 
-    --tile-start-rgb: 2, 13, 46;
-    --tile-end-rgb: 2, 5, 19;
-    --tile-border: conic-gradient(
-      #ffffff80,
-      #ffffff40,
-      #ffffff30,
-      #ffffff20,
-      #ffffff10,
-      #ffffff10,
-      #ffffff80
-    );
+.container-flex{
+     margin: auto;
+    display: flex;
+    gap: 1rem; 
+}
 
-    --callout-rgb: 20, 20, 20;
-    --callout-border-rgb: 108, 108, 108;
-    --card-rgb: 100, 100, 100;
-    --card-border-rgb: 200, 200, 200;
+
+.div-flex{
+    display: flex;
+    gap: 1rem;
+}
+
+
+.box{
+    background-color: '#0d1117';
+    width: 350px;
+    height: 500px;
+    max-height: 500px;
+    border-radius: 0.375rem; 
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.box-title {
+    background-color: '#0d1117';
+    font-size: 1rem; 
+    height: 60px;
+    cursor: grab;
+    border-radius: 0.375rem; 
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0; 
+    padding: 0.75rem; 
+    font-weight: bold;
+    border-color: '#161c22';
+    border-width: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
+  
+
+.box-title-right{
+    display: flex;
+    gap: 0.5rem; 
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+.box-title-total{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: '#161c22'; /* Replace with your actual background color value */
+    padding-left: 0.5rem;  /* px-2 corresponds to 8px */
+    padding-right: 0.5rem; /* px-2 corresponds to 8px */
+    padding-top: 0.25rem;  /* py-1 corresponds to 4px */
+    padding-bottom: 0.25rem; /* py-1 corresponds to 4px */
+    font-size: 0.875rem; /* text-sm corresponds to 14px */
+    border-radius: 9999px; /* rounded-full corresponds to a large border-radius to make it fully rounded */
   }
-}
+  
+
+
+.box-task-card {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    gap: 1rem; /* gap-4 corresponds to 1rem (16px) */
+    padding: 0.5rem; /* p-2 corresponds to 0.5rem (8px) */
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+
+
+  /* styles.css */
+.box-task-item {
+    background-color: '#0d1117'; /* Replace with your actual background color value */
+    padding: 0.625rem; /* p-2.5 corresponds to 0.625rem (10px) */
+    height: 100px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    border-radius: 0.75rem; /* rounded-xl corresponds to 12px */
+    cursor: grab;
+    position: relative;
+  }
+  
+  .box-task-item:hover {
+    box-shadow: 0 0 0 2px inset var(#f43f5e, #f43f5e); /* hover:ring-2 hover:ring-inset hover:ring-rose-500 */
+  }
+  
+
+  .box-task-item-title{
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 90%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+  }
+
+
+  .box-dragging{
+    background-color: '#0d1117';
+    opacity: 0.4;
+    border-width: 2px;
+    border-style: solid;
+    border-color: fuchsia;
+    width: 350px;
+    height: 500px;
+    max-height: 500px;
+    border-radius: 0.375rem;
+    display: flex;
+    flex-direction: column;
+  }
