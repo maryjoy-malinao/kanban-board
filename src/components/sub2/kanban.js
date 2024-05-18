@@ -96,7 +96,7 @@ function ItemTask({task}) {
                 </div>
             </div>)
 }
-
+//ColumnContainer
 function ColumnContainer({column, tasks}){
     const { setNodeRef} = useDroppable({
         id: column.id,
