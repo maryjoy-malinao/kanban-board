@@ -3,20 +3,15 @@ import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TaskCard from './TaskCard';
 
-const ColumnContainer = ({column, tasks}) => {
+const ColumnContainer = ({column, tasks, className}) => {
     const tasksIds = useMemo(() => {
         return tasks.map((task) => task.id);
       }, [tasks]);
 
-
-
     const {
         setNodeRef,
-        attributes,
-        listeners,
         transform,
         transition,
-        isDragging,
       } = useSortable({ id: column.id, data: {  type: "Column",  column, }});
 
       const style = {
@@ -25,26 +20,17 @@ const ColumnContainer = ({column, tasks}) => {
       };
 
 
-      if (isDragging) {
-        return (
-          <div
-            ref={setNodeRef}
-            style={style}
-            className="box-dragging"
-          ></div>
-        );
-      }
+ 
     
 
   return (
     <div
         ref={setNodeRef}
         style={style}
-        className="box"
+        className={`box ${className}`}
     >
         {/* Column title */}
-        <div {...attributes} {...listeners} className="box-title">
-
+        <div  className="box-title">
             <div className="box-title-right">
                 <div className="box-title-total"> 0 </div>
                 {column.title}

@@ -1,12 +1,9 @@
-import React, { useMemo, useState } from 'react'
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import React, { useState } from 'react'
+import {arrayMove } from "@dnd-kit/sortable";
 import ColumnContainer from './ColumnContainer';
 import {
     DndContext,
-    DragEndEvent,
-    DragOverEvent,
     DragOverlay,
-    DragStartEvent,
     PointerSensor,
     useSensor,
     useSensors,
@@ -43,16 +40,7 @@ const defaultTasks= [
     content:
     "Develop user registration functionality with OTP delivered on SMS after email confirmation and phone number confirmation",
 },
-{
-    id: "3",
-    columnId: "doing",
-    content: "Conduct security testing",
-},
-{
-    id: "4",
-    columnId: "doing",
-    content: "Analyze competitors",
-},
+
 {
     id: "5",
     columnId: "done",
@@ -88,28 +76,19 @@ const defaultTasks= [
     columnId: "todo",
     content: "Integrate SSL web certificates into workflow",
 },
-{
-    id: "12",
-    columnId: "doing",
-    content: "Implement error logging and monitoring",
-},
-{
-    id: "13",
-    columnId: "doing",
-    content: "Design and implement responsive UI",
-},
+
 ];
 
 
 const KanbanBoard = () => {
     const [columns, setColumns] = useState(defaultCols);
-    const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
-
     const [tasks, setTasks] = useState(defaultTasks);
 
-    const [activeColumn, setActiveColumn] = useState(null);
-
     const [activeTask, setActiveTask] = useState(null);
+    const [errorColor, setErrorColor] = useState('');
+
+    const [grabColumnName, setGrabColumnName] =useState('');
+    const [dropColumnName, setDropColumnName] = useState('');
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -133,25 +112,18 @@ const KanbanBoard = () => {
             >
        <div className='container-flex'>
             <div className='div-flex'>
-                <SortableContext items={columnsId}>
                 {columns.map((col) => (
                     <ColumnContainer 
-                    key={col.id}
-                    column={col}
-                    tasks={tasks.filter((task) =>  task.columnId === col.id)}
-                />
+                        key={col.id}
+                        column={col}
+                        tasks={tasks.filter((task) =>  task.columnId === col.id)}
+                        className={errorColor}
+                    />
                 ))}
-                </SortableContext>
             </div>
        </div>
         <ClientPortal selector="#body">
             <DragOverlay>
-                {activeColumn && (
-                <ColumnContainer
-                    column={activeColumn}
-                    tasks={tasks.filter((task) => task.columnId === activeColumn.id)}
-                />
-                )}
                 {activeTask && (
                 <TaskCard
                     task={activeTask}
@@ -165,12 +137,52 @@ const KanbanBoard = () => {
 
   )
 
-  function onDragStart(event) {
-    if (event.active.data.current?.type === "Column") {
-      setActiveColumn(event.active.data.current.column);
-      return;
+  function handleProceedDrop(grabName, targetName,func){
+    if(grabName === 'todo' && targetName === 'todo'){
+        func()
+    }else if(grabName === 'todo' && targetName === 'doing'){
+        func()
+    }else{
+        console.log('cancelled');
     }
 
+  }
+
+
+  function handleSetTaskColumn( activeId, overId){
+    setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+
+        tasks[activeIndex].columnId = overId;
+        return arrayMove(tasks, activeIndex, activeIndex);
+      });
+
+  }
+
+  
+  function handleSetTask( activeId, overId){
+    setTasks((tasks) => {
+        const activeIndex = tasks.findIndex((t) => t.id === activeId);
+        const overIndex = tasks.findIndex((t) => t.id === overId);
+
+        
+
+        if (tasks[activeIndex].columnId != tasks[overIndex].columnId) {
+          tasks[activeIndex].columnId = tasks[overIndex].columnId;
+          return arrayMove(tasks, activeIndex, overIndex - 1);
+        }
+
+        return arrayMove(tasks, activeIndex, overIndex);
+      });
+  } 
+
+  function onDragStart(event) {
+    const { active } = event;
+
+    const activeColumnId = active.data.current.task.columnId;
+
+    setGrabColumnName(activeColumnId);
+    console.log(event.active.data.current.task);
     if (event.active.data.current?.type === "Task") {
       setActiveTask(event.active.data.current.task);
       return;
@@ -179,21 +191,17 @@ const KanbanBoard = () => {
 
 
   function onDragEnd(event) {
-    setActiveColumn(null);
-    setActiveTask(null);
 
+    setActiveTask(null);
+  
     const { active, over } = event;
     if (!over) return;
+
 
     const activeId = active.id;
     const overId = over.id;
 
     if (activeId === overId) return;
-
-    const isActiveAColumn = active.data.current?.type === "Column";
-    if (!isActiveAColumn) return;
-
-  
 
     setColumns((columns) => {
       const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
@@ -219,38 +227,34 @@ const KanbanBoard = () => {
 
     if (!isActiveATask) return;
 
+
     // Im dropping a Task over another Task
-    if (isActiveATask && isOverATask) {
-      setTasks((tasks) => {
-        const activeIndex = tasks.findIndex((t) => t.id === activeId);
-        const overIndex = tasks.findIndex((t) => t.id === overId);
-
-        console.log(tasks[activeIndex].columnId, '1');
-        console.log(tasks[overIndex].columnId, '2');
-
-        if (tasks[activeIndex].columnId != tasks[overIndex].columnId) {
-          // Fix introduced after video recording
-          tasks[activeIndex].columnId = tasks[overIndex].columnId;
-          return arrayMove(tasks, activeIndex, overIndex - 1);
-        }
-
-        return arrayMove(tasks, activeIndex, overIndex);
-      });
+    if (isActiveATask && isOverATask) {  
+        const overColumnId = over.data.current.task.columnId;
+        const func = () => handleSetTask(activeId, overId)
 
 
+        handleProceedDrop(grabColumnName, overColumnId, func)
     }
 
     const isOverAColumn = over.data.current?.type === "Column";
 
+    //this will only work if the column is empty and you drop some task
+
     // Im dropping a Task over a column
     if (isActiveATask && isOverAColumn) {
-      setTasks((tasks) => {
-        const activeIndex = tasks.findIndex((t) => t.id === activeId);
 
-        tasks[activeIndex].columnId = overId;
-        console.log("DROPPING TASK OVER COLUMN", { activeIndex });
-        return arrayMove(tasks, activeIndex, activeIndex);
-      });
+        const overColumnId = over.id;
+
+        const func = () => handleSetTaskColumn(activeId, overId)
+        handleProceedDrop(grabColumnName, overColumnId, func)
+
+    //   setTasks((tasks) => {
+    //     const activeIndex = tasks.findIndex((t) => t.id === activeId);
+
+    //     tasks[activeIndex].columnId = overId;
+    //     return arrayMove(tasks, activeIndex, activeIndex);
+    //   });
 
  
     }
